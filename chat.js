@@ -54,7 +54,7 @@ io.on('connection',function(socket){
 			//send the userlist to all client
 			io.emit('userList',userList);
 			//send login info to all.
-			socket.broadcast.emit('loginInfo','【'+user.name+'】下线了。');
+			socket.broadcast.emit('logoutInfo','【'+user.name+'】下线了。');
 		}
 	});
 

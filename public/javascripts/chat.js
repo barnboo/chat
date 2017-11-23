@@ -1,8 +1,19 @@
 //connection to host and port
 var socket = io();
 
-//when user login or logout,system notice
+//when user login system notice
 socket.on('loginInfo', function (msg) {
+    onlineSound();
+    addMsgFromSys(msg);
+    Messenger().post({
+        message: msg,
+        showCloseButton: true
+    });
+});
+
+//when user logout,system notice
+socket.on('logoutInfo', function (msg) {
+    offlineSound();
     addMsgFromSys(msg);
     Messenger().post({
         message: msg,
@@ -19,7 +30,6 @@ socket.on('userList', function (userList) {
 
 //client review user information after login
 socket.on('userInfo', function (userObj) {
-    onlineSound();
     //should be use cookie or session
     userSelf = userObj;
     $('#spanuser').text('当前用户：' + userObj.name);

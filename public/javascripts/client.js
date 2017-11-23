@@ -96,7 +96,7 @@ $(function () {
     })
 });
 
-//add message in UI
+//add messageAndImage in UI
 function addImgFromUser(msgObj, isSelf) {
     var msgType = isSelf ? "message-reply" : "message-receive";
     var msgHtml = $('<div><div class="text-center" style="color: #aaa">' + msgObj.sendTime + '</div><div class="message-info"><div class="user-info"><img src="/images/1.jpg" class="user-avatar img-thumbnail"></div><div class="message-content-box"><div class="arrow"></div><div class="message-content">test</div></div></div></div>');
@@ -184,6 +184,12 @@ function keywordsName1(e) {
 //online sound tip
 function onlineSound() {
     document.getElementById('audio').src = 'music/online.mp3';
+    document.getElementById('audio').play();
+}
+
+//offline sound tip
+function offlineSound() {
+    document.getElementById('audio').src = 'music/offline.mp3';
     document.getElementById('audio').play();
 }
 
