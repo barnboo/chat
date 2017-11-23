@@ -10,7 +10,7 @@ block content
     .container
         .row
             .col-sm-3
-                .panel.panel-primary(style="margin-right:-10px;")
+                .panel.panel-primary
                     .panel-heading
                         span.glyphicon.glyphicon-user &nbsp;
                         span 在线成员
@@ -34,10 +34,10 @@ block content
                                 span.glyphicon.glyphicon-heart
             .col-sm-9
                 .panel.panel-primary
-                    .panel-heading
+                    .panel-heading.clearfix
                         span.glyphicon.glyphicon-comment &nbsp;
                         span#receiver 当前位置：公共聊天室（如需私聊，请点击左侧用户并发送消息）
-                        span#spanuser(style="float:right;")
+                        span#spanuser.pull-right
                     .panel-body
                         .msg-list-body.msg-content
                             
@@ -50,7 +50,7 @@ block content
                                 label(style="position:relative;")
                                     img(src="/images/jt.jpg",title="send images",style="cursor:pointer;")
                                     input#sendImage(type="file",value="images",style="display:none;")
-                            input.form-control#msg(type="text",placeholder="请输入聊天内容",onkeydown="javascript:keywordsMsg(event);")
+                            input.form-control#msg(type="text",placeholder="请输入",onkeydown="javascript:keywordsMsg(event);")
                             span.input-group-btn
                                 button.btn.btn-primary#sendMsg(type="button") 发送/Send
 
