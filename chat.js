@@ -72,6 +72,7 @@ io.on('connection',function(socket){
 		*/
 		socket.broadcast.emit('toAll',msgObj);
 	});
+
 	//sendImageToALL
 	socket.on('sendImageToALL',function(msgObj){
 		/*
@@ -87,24 +88,19 @@ io.on('connection',function(socket){
 		socket.broadcast.emit('sendImageToALL',msgObj);
 	});
 
-
 	//send to one
 	socket.on('toOne',function(msgObj){
-		/*
-			format:{
-				from:{
-					name:"",
-					img:"",
-					id:""
-				},
-				to:"",  //socketid
-				msg:""
-			}
-		*/
 		//var toSocket = _.findWhere(socketList,{id:msgObj.to});
 		var toSocket = _.findWhere(io.sockets.sockets,{id:msgObj.to});
 		console.log(toSocket);
 		toSocket.emit('toOne', msgObj);
+	});
+
+	//sendImageToOne
+	socket.on('sendImageToOne',function(msgObj){
+		var toSocket = _.findWhere(io.sockets.sockets,{id:msgObj.to});
+		console.log(toSocket);
+		toSocket.emit('sendImageToOne', msgObj);
 	});
 });
 

@@ -32,7 +32,7 @@ socket.on('userList', function (userList) {
 socket.on('userInfo', function (userObj) {
     //should be use cookie or session
     userSelf = userObj;
-    $('#spanuser').text('当前用户：' + userObj.name);
+    $('#spanuser').text('欢迎你：' + userObj.name);
 });
 
 //review message from toAll
@@ -44,13 +44,23 @@ socket.on('toAll', function (msgObj) {
 //review message from toOne
 socket.on('toOne', function (msgObj) {
     receiveSound();
-    Messenger().post({
-        message: "<a style='color: #fff' href=\"javascript:showSetMsgToOne(\'" + msgObj.from.name + "\',\'" + msgObj.from.id + "\');\">" + "来自【" + msgObj.from.name + "】的消息：" + msgObj.msg + "</a><div style='color:#aaa'>" + msgObj.sendTime + "</div>",
-        showCloseButton: true
-    });
+    addMsgFromUser(msgObj, false);
+    receiveMsg(msgObj);
+    //Messenger().post({
+    //    message: "<a style='color: #fff' href=\"javascript:showSetMsgToOne(\'" + msgObj.from.name + "\',\'" + msgObj.from.id + "\');\">" + "来自【" + msgObj.from.name + "】的消息：" + msgObj.msg + "</a><div style='color:#aaa'>" + msgObj.sendTime + "</div>",
+    //    showCloseButton: true
+    //});
 });
 
+//send img to all
 socket.on('sendImageToALL', function (msgObj) {
     receiveSound();
     addImgFromUser(msgObj, false);
+});
+
+//send img to one
+socket.on('sendImageToOne', function (msgObj) {
+    receiveSound();
+    addImgFromUser(msgObj, false);
+    receiveMsg(msgObj);
 });

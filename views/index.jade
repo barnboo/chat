@@ -17,10 +17,10 @@ block content
                     .panel-body
                         .msg-list-body.user-content
                             ul
-                                li(style="display:none;")
+                                li.userItem.active(data-id="public")
                                     a(href="#")
                                         img.img-thumbnail(src="/images/1.jpg")
-                                        span
+                                        span 公共聊天室
                                 
                     .panel-footer.text-center
                         .btn-group
@@ -36,7 +36,7 @@ block content
                 .panel.panel-primary
                     .panel-heading.clearfix
                         span.glyphicon.glyphicon-comment &nbsp;
-                        span#receiver 当前位置：公共聊天室（如需私聊，请点击左侧用户并发送消息）
+                        span#receiver 公共聊天室
                         span#spanuser.pull-right
                     .panel-body
                         .msg-list-body.msg-content
@@ -52,7 +52,7 @@ block content
                                     input#sendImage(type="file",value="images",style="display:none;")
                             input.form-control#msg(type="text",placeholder="请输入",onkeydown="javascript:keywordsMsg(event);")
                             span.input-group-btn
-                                button.btn.btn-primary#sendMsg(type="button") 发送/Send
+                                button.btn.btn-primary#sendMsg(type="button") 发送
 
     .modal.fade#myModal(tabindex="-1")
         .modal-dialog
@@ -67,19 +67,9 @@ block content
                 .modal-footer
                     input.btn.btn-primary#btn-setName(type="button",value="确定")
 
-    .modal.fade#setMsgToOne(tabindex="-1")
-        .modal-dialog
-            .modal-content
-                .modal-header
-                    h4.modal-title#myModalLabel1
-                .modal-body
-                    input.form-control#input_msgToOne(type="text",onkeydown="javascript:keywordsName1(event);")
-                            
-                .modal-footer
-                    input.btn.btn-primary#btn_toOne(type="button",value="发送/Send")
     script(src="/socket.io/socket.io.js")
-    script(src='/javascripts/client.js')
     script(src='/javascripts/chat.js')
+    script(src='/javascripts/client.js')
     script(src='/javascripts/sco.message.js')
     script(src="/js/messenger.min.js")
     script(src="/js/messenger-theme-flat.js")

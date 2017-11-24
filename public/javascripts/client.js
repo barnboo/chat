@@ -1,5 +1,5 @@
 var userSelf = {};
-var toOneId;
+var toOneId = null;
 $(function () {
     $('#myModal').modal({
         //backdrop: 'static',
@@ -37,63 +37,83 @@ $(function () {
         }
     });
 
-    //send to all
+    //send to msg
     $('#sendMsg').click(function () {
         var msg = $('#msg').val();
         if (msg == '') {
             alert('Please enter the message content!');
             return;
         }
-        var from = userSelf;
-        var msgObj = {
-            from: from,
-            msg: msg,
-            sendTime: formatDate()
-        };
-        socket.emit('toAll', msgObj);
-        addMsgFromUser(msgObj, true);
-        $('#msg').val('');
-    });
-
-    //send image to all
-    $('#sendImage').change(function () {
-        if (this.files.length != 0) {
-            var file = this.files[0];
-            reader = new FileReader();
-            if (!reader) {
-                alert("!your browser doesn\'t support fileReader");
-                return;
-            }
-            reader.onload = function (e) {
-                //console.log(e.target.result);
-                var msgObj = {
-                    from: userSelf,
-                    img: e.target.result,
-                    sendTime: formatDate()
-                };
-                socket.emit('sendImageToALL', msgObj);
-                addImgFromUser(msgObj, true);
+        //发送个某个人
+        if (toOneId) {
+            var msgObj1 = {
+                from: userSelf,
+                to: toOneId,
+                msg: msg,
+                sendTime: formatDate()
             };
-            reader.readAsDataURL(file);
+            socket.emit('toOne', msgObj1);
+            addMsgFromUser(msgObj1, true);
+            $('#msg').val('');
+        } else {//发送给所有人
+            var msgObj2 = {
+                from: userSelf,
+                msg: msg,
+                sendTime: formatDate()
+            };
+            socket.emit('toAll', msgObj2);
+            addMsgFromUser(msgObj2, true);
+            $('#msg').val('');
         }
     });
 
-    //send to one
-    $('#btn_toOne').click(function () {
-        var msg = $('#input_msgToOne').val();
-        if (msg == '') {
-            return;
+    //send image
+    $('#sendImage').change(function () {
+        if (toOneId) {
+            if (this.files.length != 0) {
+                var file1 = this.files[0];
+                reader = new FileReader();
+                if (!reader) {
+                    alert("!your browser doesn\'t support fileReader");
+                    return;
+                }
+                reader.onload = function (e) {
+                    //console.log(e.target.result);
+                    //发送给某个人
+                    var msgObj1 = {
+                        from: userSelf,
+                        to: toOneId,
+                        img: e.target.result,
+                        sendTime: formatDate()
+                    };
+                    socket.emit('sendImageToOne', msgObj1);
+                    addImgFromUser(msgObj1, true);
+                };
+                reader.readAsDataURL(file1);
+            }
+        } else {
+            if (this.files.length != 0) {
+                var file2 = this.files[0];
+                reader = new FileReader();
+                if (!reader) {
+                    alert("!your browser doesn\'t support fileReader");
+                    return;
+                }
+                reader.onload = function (e) {
+                    //console.log(e.target.result);
+                    //发送给所有人
+                    var msgObj2 = {
+                        from: userSelf,
+                        img: e.target.result,
+                        sendTime: formatDate()
+                    };
+                    socket.emit('sendImageToALL', msgObj2);
+                    addImgFromUser(msgObj2, true);
+                };
+                reader.readAsDataURL(file2);
+            }
         }
-        var msgObj = {
-            from: userSelf,
-            to: toOneId,
-            msg: msg,
-            sendTime: formatDate()
-        };
-        socket.emit('toOne', msgObj);
-        $('#setMsgToOne').modal('hide');
-        $('#input_msgToOne').val('');
-    })
+    });
 });
 
 //add messageAndImage in UI
@@ -137,10 +157,26 @@ function checkUser(name) {
     });
     return haveName;
 }
+
 function showSetMsgToOne(name, id) {
-    $('#setMsgToOne').modal();
-    $('#myModalLabel1').text("Send to " + name);
-    toOneId = id;
+    if (id == 'public') {
+        toOneId = null;
+        $('#receiver').text('公共聊天室');
+    } else {
+        toOneId = id;
+        $('#receiver').text('发送给：' + name);
+    }
+}
+
+function receiveMsg(msgObj) {
+    $('#receiver').text('来自：' + msgObj.from.name + '的消息');
+    $('.userItem').each(function (i, v) {
+        if ($(v).attr('data-id') == msgObj.from.id) {
+            $('.userItem').removeClass('active');
+            $(v).addClass('active');
+            toOneId = msgObj.from.id;
+        }
+    });
 }
 //add user in UI
 function addUser(userList) {
@@ -149,14 +185,29 @@ function addUser(userList) {
     parentUl.html('');
     parentUl.append(cloneLi);
     for (var i in userList) {
-        var cloneLi = parentUl.children('li:first').clone();
-        cloneLi.children('a').attr('href', "javascript:showSetMsgToOne('" + userList[i].name + "','" + userList[i].id + "');");
-        cloneLi.children('a').children('img').attr('src', userList[i].img);
-        cloneLi.children('a').children('span').text(userList[i].name);
-        cloneLi.show();
-        parentUl.append(cloneLi);
+        var item = document.createElement('li');
+        item.className = 'userItem';
+        item.setAttribute('data-id', userList[i].id);
+        item.setAttribute('data-name', userList[i].name);
+        var str = '';
+        str += '<a href="javascript:;">';
+        str += '<img src="' + userList[i].img + '" /> ';
+        str += '<span>' + userList[i].name + '</span>';
+        str += '</a>';
+        item.innerHTML = str;
+        parentUl.append(item);
     }
 }
+
+//切换聊天对象
+$(document.body).on('click', '.userItem', function () {
+    var id = $(this).attr('data-id');
+    var name = $(this).attr('data-name');
+    showSetMsgToOne(name, id);
+    $('.userItem').removeClass('active');
+    $(this).addClass('active');
+});
+
 
 //send message enter function
 function keywordsMsg(e) {
@@ -173,13 +224,7 @@ function keywordsName(e) {
         $('#btn-setName').click();
     }
 }
-//send to one enter function
-function keywordsName1(e) {
-    var event1 = e || window.event;
-    if (event1.keyCode == 13) {
-        $('#btn_toOne').click();
-    }
-}
+
 
 //online sound tip
 function onlineSound() {
